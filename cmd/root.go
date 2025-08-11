@@ -140,6 +140,7 @@ import (
 	_ "github.com/googleapis/genai-toolbox/internal/sources/oceanbase"
 	_ "github.com/googleapis/genai-toolbox/internal/sources/postgres"
 	_ "github.com/googleapis/genai-toolbox/internal/sources/redis"
+	_ "github.com/googleapis/genai-toolbox/internal/sources/singlestore"
 	_ "github.com/googleapis/genai-toolbox/internal/sources/spanner"
 	_ "github.com/googleapis/genai-toolbox/internal/sources/sqlite"
 	_ "github.com/googleapis/genai-toolbox/internal/sources/tidb"
