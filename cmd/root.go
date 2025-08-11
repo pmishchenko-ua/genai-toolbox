@@ -106,6 +106,8 @@ import (
 	_ "github.com/googleapis/genai-toolbox/internal/tools/postgres/postgresexecutesql"
 	_ "github.com/googleapis/genai-toolbox/internal/tools/postgres/postgressql"
 	_ "github.com/googleapis/genai-toolbox/internal/tools/redis"
+	_ "github.com/googleapis/genai-toolbox/internal/tools/singlestore/singlestoreexecutesql"
+	_ "github.com/googleapis/genai-toolbox/internal/tools/singlestore/singlestoresql"
 	_ "github.com/googleapis/genai-toolbox/internal/tools/spanner/spannerexecutesql"
 	_ "github.com/googleapis/genai-toolbox/internal/tools/spanner/spannersql"
 	_ "github.com/googleapis/genai-toolbox/internal/tools/sqlitesql"
