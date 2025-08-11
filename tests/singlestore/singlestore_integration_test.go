@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mysql
+package singlestore
 
 import (
 	"context"
@@ -30,41 +30,41 @@ import (
 )
 
 var (
-	MySQLSourceKind = "mysql"
-	MySQLToolKind   = "mysql-sql"
-	MySQLDatabase   = os.Getenv("MYSQL_DATABASE")
-	MySQLHost       = os.Getenv("MYSQL_HOST")
-	MySQLPort       = os.Getenv("MYSQL_PORT")
-	MySQLUser       = os.Getenv("MYSQL_USER")
-	MySQLPass       = os.Getenv("MYSQL_PASS")
+	SingleStoreSourceKind = "singlestore"
+	SingleStoreToolKind   = "singlestore-sql"
+	SingleStoreDatabase   = os.Getenv("SINGLESTORE_DATABASE")
+	SingleStoreHost       = os.Getenv("SINGLESTORE_HOST")
+	SingleStorePort       = os.Getenv("SINGLESTORE_PORT")
+	SingleStoreUser       = os.Getenv("SINGLESTORE_USER")
+	SingleStorePass       = os.Getenv("SINGLESTORE_PASS")
 )
 
-func getMySQLVars(t *testing.T) map[string]any {
+func getSingleStoreVars(t *testing.T) map[string]any {
 	switch "" {
-	case MySQLDatabase:
+	case SingleStoreDatabase:
 		t.Fatal("'MYSQL_DATABASE' not set")
-	case MySQLHost:
+	case SingleStoreHost:
 		t.Fatal("'MYSQL_HOST' not set")
-	case MySQLPort:
+	case SingleStorePort:
 		t.Fatal("'MYSQL_PORT' not set")
-	case MySQLUser:
+	case SingleStoreUser:
 		t.Fatal("'MYSQL_USER' not set")
-	case MySQLPass:
+	case SingleStorePass:
 		t.Fatal("'MYSQL_PASS' not set")
 	}
 
 	return map[string]any{
-		"kind":     MySQLSourceKind,
-		"host":     MySQLHost,
-		"port":     MySQLPort,
-		"database": MySQLDatabase,
-		"user":     MySQLUser,
-		"password": MySQLPass,
+		"kind":     SingleStoreSourceKind,
+		"host":     SingleStoreHost,
+		"port":     SingleStorePort,
+		"database": SingleStoreDatabase,
+		"user":     SingleStoreUser,
+		"password": SingleStorePass,
 	}
 }
 
-// Copied over from mysql.go
-func initMySQLConnectionPool(host, port, user, pass, dbname string) (*sql.DB, error) {
+// Copied over from singlestore.go
+func initSingleStoreConnectionPool(host, port, user, pass, dbname string) (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, port, dbname)
 
 	// Interact with the driver directly as you normally would
@@ -75,16 +75,16 @@ func initMySQLConnectionPool(host, port, user, pass, dbname string) (*sql.DB, er
 	return pool, nil
 }
 
-func TestMySQLToolEndpoints(t *testing.T) {
-	sourceConfig := getMySQLVars(t)
+func TestSingleStoreToolEndpoints(t *testing.T) {
+	sourceConfig := getSingleStoreVars(t)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	var args []string
 
-	pool, err := initMySQLConnectionPool(MySQLHost, MySQLPort, MySQLUser, MySQLPass, MySQLDatabase)
+	pool, err := initSingleStoreConnectionPool(SingleStoreHost, SingleStorePort, SingleStoreUser, SingleStorePass, SingleStoreDatabase)
 	if err != nil {
-		t.Fatalf("unable to create MySQL connection pool: %s", err)
+		t.Fatalf("unable to create SingleStore connection pool: %s", err)
 	}
 
 	// create table name with UUID
@@ -93,20 +93,20 @@ func TestMySQLToolEndpoints(t *testing.T) {
 	tableNameTemplateParam := "template_param_table_" + strings.ReplaceAll(uuid.New().String(), "-", "")
 
 	// set up data for param tool
-	createParamTableStmt, insertParamTableStmt, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, paramTestParams := tests.GetMySQLParamToolInfo(tableNameParam)
-	teardownTable1 := tests.SetupMySQLTable(t, ctx, pool, createParamTableStmt, insertParamTableStmt, tableNameParam, paramTestParams)
+	createParamTableStmt, insertParamTableStmt, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, paramTestParams := tests.GetSingleStoreParamToolInfo(tableNameParam)
+	teardownTable1 := tests.SetupSingleStoreTable(t, ctx, pool, createParamTableStmt, insertParamTableStmt, tableNameParam, paramTestParams)
 	defer teardownTable1(t)
 
 	// set up data for auth tool
-	createAuthTableStmt, insertAuthTableStmt, authToolStmt, authTestParams := tests.GetMySQLAuthToolInfo(tableNameAuth)
-	teardownTable2 := tests.SetupMySQLTable(t, ctx, pool, createAuthTableStmt, insertAuthTableStmt, tableNameAuth, authTestParams)
+	createAuthTableStmt, insertAuthTableStmt, authToolStmt, authTestParams := tests.GetSingleStoreAuthToolInfo(tableNameAuth)
+	teardownTable2 := tests.SetupSingleStoreTable(t, ctx, pool, createAuthTableStmt, insertAuthTableStmt, tableNameAuth, authTestParams)
 	defer teardownTable2(t)
 
 	// Write config into a file and pass it to command
-	toolsFile := tests.GetToolsConfig(sourceConfig, MySQLToolKind, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, authToolStmt)
+	toolsFile := tests.GetToolsConfig(sourceConfig, SingleStoreToolKind, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, authToolStmt)
 	toolsFile = tests.AddMySqlExecuteSqlConfig(t, toolsFile)
-	tmplSelectCombined, tmplSelectFilterCombined := tests.GetMySQLTmplToolStatement()
-	toolsFile = tests.AddTemplateParamConfig(t, toolsFile, MySQLToolKind, tmplSelectCombined, tmplSelectFilterCombined, "")
+	tmplSelectCombined, tmplSelectFilterCombined := tests.GetSingleStoreTmplToolStatement()
+	toolsFile = tests.AddTemplateParamConfig(t, toolsFile, SingleStoreToolKind, tmplSelectCombined, tmplSelectFilterCombined, "")
 
 	cmd, cleanup, err := tests.StartCmd(ctx, toolsFile, args...)
 	if err != nil {
