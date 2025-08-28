@@ -42,15 +42,15 @@ var (
 func getSingleStoreVars(t *testing.T) map[string]any {
 	switch "" {
 	case SingleStoreDatabase:
-		t.Fatal("'MYSQL_DATABASE' not set")
+		t.Fatal("'SINGLESTORE_DATABASE' not set")
 	case SingleStoreHost:
-		t.Fatal("'MYSQL_HOST' not set")
+		t.Fatal("'SINGLESTORE_HOST' not set")
 	case SingleStorePort:
-		t.Fatal("'MYSQL_PORT' not set")
+		t.Fatal("'SINGLESTORE_PORT' not set")
 	case SingleStoreUser:
-		t.Fatal("'MYSQL_USER' not set")
+		t.Fatal("'SINGLESTORE_USER' not set")
 	case SingleStorePass:
-		t.Fatal("'MYSQL_PASS' not set")
+		t.Fatal("'SINGLESTORE_PASS' not set")
 	}
 
 	return map[string]any{
@@ -104,7 +104,7 @@ func TestSingleStoreToolEndpoints(t *testing.T) {
 
 	// Write config into a file and pass it to command
 	toolsFile := tests.GetToolsConfig(sourceConfig, SingleStoreToolKind, paramToolStmt, idParamToolStmt, nameParamToolStmt, arrayToolStmt, authToolStmt)
-	toolsFile = tests.AddMySqlExecuteSqlConfig(t, toolsFile)
+	toolsFile = tests.AddSingleStoreExecuteSqlConfig(t, toolsFile)
 	tmplSelectCombined, tmplSelectFilterCombined := tests.GetSingleStoreTmplToolStatement()
 	toolsFile = tests.AddTemplateParamConfig(t, toolsFile, SingleStoreToolKind, tmplSelectCombined, tmplSelectFilterCombined, "")
 
@@ -124,7 +124,7 @@ func TestSingleStoreToolEndpoints(t *testing.T) {
 
 	tests.RunToolGetTest(t)
 
-	select1Want, failInvocationWant, createTableStatement := tests.GetMySQLWants()
+	select1Want, failInvocationWant, createTableStatement := tests.GetSingleStoreWants()
 	invokeParamWant, invokeIdNullWant, nullWant, mcpInvokeParamWant := tests.GetNonSpannerInvokeParamWant()
 	tests.RunToolInvokeTest(t, select1Want, invokeParamWant, invokeIdNullWant, nullWant, true, false)
 	tests.RunExecuteSqlToolInvokeTest(t, createTableStatement, select1Want)
