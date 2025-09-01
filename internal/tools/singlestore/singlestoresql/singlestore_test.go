@@ -1,1 +1,0 @@
-package singlestoresql_test
