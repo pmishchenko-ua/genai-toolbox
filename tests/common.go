@@ -488,10 +488,10 @@ func GetMySQLWants() (string, string, string, string) {
 // GetSingleStoreWants return the expected wants for singlestore
 func GetSingleStoreWants() (string, string, string, string) {
 	select1Want := "[{\"1\":1}]"
-	failInvocationWant := `{"jsonrpc":"2.0","id":"invoke-fail-tool","result":{"content":[{"type":"text","text":"unable to execute query: Error 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELEC 1' at line 1"}],"isError":true}}`
-	createTableStatement := `"CREATE TABLE t (id SERIAL PRIMARY KEY, name TEXT)"`
+	mcpMyFailToolWant := `{"jsonrpc":"2.0","id":"invoke-fail-tool","result":{"content":[{"type":"text","text":"unable to execute query: Error 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELEC 1' at line 1"}],"isError":true}}`
+	createTableStatement := `"CREATE TABLE t (id BIGINT AUTO INCREMENT PRIMARY KEY, name TEXT)"`
 	mcpSelect1Want := `{"jsonrpc":"2.0","id":"invoke my-auth-required-tool","result":{"content":[{"type":"text","text":"{\"1\":1}"}]}}`
-	return select1Want, failInvocationWant, createTableStatement, mcpSelect1Want
+	return select1Want, mcpMyFailToolWant, createTableStatement, mcpSelect1Want
 }
 
 // SetupPostgresSQLTable creates and inserts data into a table of tool
