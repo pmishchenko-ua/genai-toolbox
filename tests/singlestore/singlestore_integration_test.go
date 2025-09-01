@@ -36,7 +36,7 @@ var (
 	SingleStoreHost       = os.Getenv("SINGLESTORE_HOST")
 	SingleStorePort       = os.Getenv("SINGLESTORE_PORT")
 	SingleStoreUser       = os.Getenv("SINGLESTORE_USER")
-	SingleStorePass       = os.Getenv("SINGLESTORE_PASS")
+	SingleStorePass       = os.Getenv("SINGLESTORE_PASSWORD")
 )
 
 func getSingleStoreVars(t *testing.T) map[string]any {
@@ -50,7 +50,7 @@ func getSingleStoreVars(t *testing.T) map[string]any {
 	case SingleStoreUser:
 		t.Fatal("'SINGLESTORE_USER' not set")
 	case SingleStorePass:
-		t.Fatal("'SINGLESTORE_PASS' not set")
+		t.Fatal("'SINGLESTORE_PASSWORD' not set")
 	}
 
 	return map[string]any{
