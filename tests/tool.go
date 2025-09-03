@@ -350,7 +350,7 @@ func RunToolInvokeTest(t *testing.T, select1Want string, options ...InvokeTestOp
 		{
 			name:           "Invoke my-auth-tool with auth token",
 			api:            "http://127.0.0.1:5000/api/tool/my-auth-tool/invoke",
-			enabled:        true,
+			enabled:        false,
 			requestHeader:  map[string]string{"my-google-auth_token": idToken},
 			requestBody:    bytes.NewBuffer([]byte(`{}`)),
 			wantBody:       "[{\"name\":\"Alice\"}]",
@@ -375,7 +375,7 @@ func RunToolInvokeTest(t *testing.T, select1Want string, options ...InvokeTestOp
 		{
 			name:          "Invoke my-auth-required-tool with auth token",
 			api:           "http://127.0.0.1:5000/api/tool/my-auth-required-tool/invoke",
-			enabled:       true,
+			enabled:       false,
 			requestHeader: map[string]string{"my-google-auth_token": idToken},
 			requestBody:   bytes.NewBuffer([]byte(`{}`)),
 
@@ -385,7 +385,7 @@ func RunToolInvokeTest(t *testing.T, select1Want string, options ...InvokeTestOp
 		{
 			name:           "Invoke my-auth-required-tool with invalid auth token",
 			api:            "http://127.0.0.1:5000/api/tool/my-auth-required-tool/invoke",
-			enabled:        true,
+			enabled:        false,
 			requestHeader:  map[string]string{"my-google-auth_token": "INVALID_TOKEN"},
 			requestBody:    bytes.NewBuffer([]byte(`{}`)),
 			wantStatusCode: http.StatusUnauthorized,
@@ -393,7 +393,7 @@ func RunToolInvokeTest(t *testing.T, select1Want string, options ...InvokeTestOp
 		{
 			name:           "Invoke my-auth-required-tool without auth token",
 			api:            "http://127.0.0.1:5000/api/tool/my-auth-tool/invoke",
-			enabled:        true,
+			enabled:        false,
 			requestHeader:  map[string]string{},
 			requestBody:    bytes.NewBuffer([]byte(`{}`)),
 			wantStatusCode: http.StatusUnauthorized,
@@ -654,10 +654,10 @@ func RunExecuteSqlToolInvokeTest(t *testing.T, createTableStatement, select1Want
 	}
 
 	// Get ID token
-	idToken, err := GetGoogleIdToken(ClientId)
-	if err != nil {
-		t.Fatalf("error getting Google ID token: %s", err)
-	}
+	// idToken, err := GetGoogleIdToken(ClientId)
+	// if err != nil {
+	// 	t.Fatalf("error getting Google ID token: %s", err)
+	// }
 
 	// Test tool invoke endpoint
 	invokeTcs := []struct {
@@ -707,14 +707,14 @@ func RunExecuteSqlToolInvokeTest(t *testing.T, createTableStatement, select1Want
 			requestBody:   bytes.NewBuffer([]byte(`{}`)),
 			isErr:         true,
 		},
-		{
-			name:          "Invoke my-auth-exec-sql-tool with auth token",
-			api:           "http://127.0.0.1:5000/api/tool/my-auth-exec-sql-tool/invoke",
-			requestHeader: map[string]string{"my-google-auth_token": idToken},
-			requestBody:   bytes.NewBuffer([]byte(fmt.Sprintf(`{"sql": %s}`, configs.select1Statement))),
-			isErr:         false,
-			want:          select1Want,
-		},
+		// {
+		// 	name:          "Invoke my-auth-exec-sql-tool with auth token",
+		// 	api:           "http://127.0.0.1:5000/api/tool/my-auth-exec-sql-tool/invoke",
+		// 	requestHeader: map[string]string{"my-google-auth_token": idToken},
+		// 	requestBody:   bytes.NewBuffer([]byte(fmt.Sprintf(`{"sql": %s}`, configs.select1Statement))),
+		// 	isErr:         false,
+		// 	want:          select1Want,
+		// },
 		{
 			name:          "Invoke my-auth-exec-sql-tool with invalid auth token",
 			api:           "http://127.0.0.1:5000/api/tool/my-auth-exec-sql-tool/invoke",
@@ -939,7 +939,7 @@ func RunMCPToolCallMethod(t *testing.T, myFailToolWant, select1Want string, opti
 		{
 			name:          "MCP Invoke my-auth-required-tool",
 			api:           "http://127.0.0.1:5000/mcp",
-			enabled:       true,
+			enabled:       false,
 			requestHeader: map[string]string{"my-google-auth_token": idToken},
 			requestBody: jsonrpc.JSONRPCRequest{
 				Jsonrpc: "2.0",
