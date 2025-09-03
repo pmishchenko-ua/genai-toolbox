@@ -1,42 +1,42 @@
 ---
-title: "MySQL"
+title: "SingleStore"
 type: docs
 weight: 1
 description: >
-  MySQL is a relational database management system that stores and manages data.
+  SingleStore is the cloud-native database built with speed and scale to power data-intensive applications.
 ---
 
 ## About
 
-[MySQL][mysql-docs] is a relational database management system (RDBMS) that
-stores and manages data. It's a popular choice for developers because of its
-reliability, performance, and ease of use.
+[SingleStore][singlestore-docs] is a distributed SQL database built to power intelligent applications. It is both relational and multi-model, enabling developers to easily build and scale applications and workloads.
 
-[mysql-docs]: https://www.mysql.com/
+SingleStore is built around Universal Storage which combines in-memory rowstore and on-disk columnstore data formats to deliver a single table type that is optimized to handle both transactional and analytical workloads.
+
+[singlestore-docs]: https://docs.singlestore.com/
 
 ## Available Tools
 
-- [`mysql-sql`](../tools/mysql/mysql-sql.md)  
-  Execute pre-defined prepared SQL queries in MySQL.
+- [`singlestore-sql`](../tools/singlestore/singlestore-sql.md)  
+  Execute pre-defined prepared SQL queries in SingleStore.
 
-- [`mysql-execute-sql`](../tools/mysql/mysql-execute-sql.md)  
-  Run parameterized SQL queries in MySQL.
+- [`singlestore-execute-sql`](../tools/singlestore/singlestore-execute-sql.md)  
+  Run parameterized SQL queries in SingleStore.
 
 ## Requirements
 
 ### Database User
 
 This source only uses standard authentication. You will need to [create a
-MySQL user][mysql-users] to login to the database with.
+database user][singlestore-user] to login to the database with.
 
-[mysql-users]: https://dev.mysql.com/doc/refman/8.4/en/user-names.html
+[singlestore-user]: https://docs.singlestore.com/cloud/reference/sql-reference/security-management-commands/create-user/
 
 ## Example
 
 ```yaml
 sources:
-    my-mysql-source:
-        kind: mysql
+    my-singlestore-source:
+        kind: singlestore
         host: 127.0.0.1
         port: 3306
         database: my_db
@@ -54,10 +54,10 @@ instead of hardcoding your secrets into the configuration file.
 
 | **field**    | **type** | **required** | **description**                                                                                 |
 | ------------ | :------: | :----------: | ----------------------------------------------------------------------------------------------- |
-| kind         |  string  |     true     | Must be "mysql".                                                                                |
+| kind         |  string  |     true     | Must be "singlestore".                                                                          |
 | host         |  string  |     true     | IP address to connect to (e.g. "127.0.0.1").                                                    |
 | port         |  string  |     true     | Port to connect to (e.g. "3306").                                                               |
-| database     |  string  |     true     | Name of the MySQL database to connect to (e.g. "my_db").                                        |
-| user         |  string  |     true     | Name of the MySQL user to connect as (e.g. "my-mysql-user").                                    |
-| password     |  string  |     true     | Password of the MySQL user (e.g. "my-password").                                                |
+| database     |  string  |     true     | Name of the SingleStore database to connect to (e.g. "my_db").                                  |
+| user         |  string  |     true     | Name of the SingleStore database user to connect as (e.g. "admin").                             |
+| password     |  string  |     true     | Password of the SingleStore database user.                                                      |
 | queryTimeout |  string  |    false     | Maximum time to wait for query execution (e.g. "30s", "2m"). By default, no timeout is applied. |
