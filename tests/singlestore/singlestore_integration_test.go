@@ -63,20 +63,20 @@ func getSingleStoreVars(t *testing.T) map[string]any {
 	}
 }
 
-// getSingleStoreParamToolInfo returns statements and param for my-tool mysql-sql kind
+// getSingleStoreParamToolInfo returns statements and params for my-tool
 func getSingleStoreParamToolInfo(tableName string) (string, string, string, string, string, string, []any) {
 	createStatement := fmt.Sprintf("CREATE TABLE %s (id BIGINT NOT NULL PRIMARY KEY, name VARCHAR(255));", tableName)
 	insertStatement := fmt.Sprintf("INSERT INTO %s (id, name) VALUES (?, ?), (?, ?), (?, ?), (?, ?);", tableName)
 	toolStatement := fmt.Sprintf("SELECT * FROM %s WHERE id = ? OR name = ? ORDER BY id;", tableName)
 	idParamStatement := fmt.Sprintf("SELECT * FROM %s WHERE id = ? ORDER BY id;", tableName)
 	nameParamStatement := fmt.Sprintf("SELECT * FROM %s WHERE name = ? ORDER BY id;", tableName)
-	// SingleStore doesn't support array parameters in IN clause unlike e.g. MySQL
+	// SingleStore doesn't support array parameters in IN clause unlike some other databases
 	arrayToolStmt := ""
 	insertParams := []any{1, "Alice", 2, "Jane", 3, "Sid", 4, nil}
 	return createStatement, insertStatement, toolStatement, idParamStatement, nameParamStatement, arrayToolStmt, insertParams
 }
 
-// getSingleStoreAuthToolInfo returns statements and param of my-auth-tool for singlestore-sql kind
+// getSingleStoreAuthToolInfo returns statements and param of my-auth-tool
 func getSingleStoreAuthToolInfo(tableName string) (string, string, string, []any) {
 	createStatement := fmt.Sprintf("CREATE TABLE %s (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255));", tableName)
 	insertStatement := fmt.Sprintf("INSERT INTO %s (name, email) VALUES (?, ?), (?, ?)", tableName)

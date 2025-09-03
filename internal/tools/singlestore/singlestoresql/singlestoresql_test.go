@@ -26,7 +26,7 @@ import (
 	"github.com/googleapis/genai-toolbox/internal/tools/singlestore/singlestoresql"
 )
 
-func TestParseFromYamlMySQL(t *testing.T) {
+func TestParseFromYamlSingleStore(t *testing.T) {
 	ctx, err := testutils.ContextWithNewLogger()
 	if err != nil {
 		t.Fatalf("unexpected error: %s", err)
@@ -93,7 +93,7 @@ func TestParseFromYamlMySQL(t *testing.T) {
 	}
 }
 
-func TestParseFromYamlWithTemplateParamsMySQL(t *testing.T) {
+func TestParseFromYamlWithTemplateParamsSingleStore(t *testing.T) {
 	ctx, err := testutils.ContextWithNewLogger()
 	if err != nil {
 		t.Fatalf("unexpected error: %s", err)
