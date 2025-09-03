@@ -292,29 +292,6 @@ func AddMySqlExecuteSqlConfig(t *testing.T, config map[string]any) map[string]an
 	return config
 }
 
-// AddSingleStoreExecuteSqlConfig gets the tools config for `singlestore-execute-sql`
-func AddSingleStoreExecuteSqlConfig(t *testing.T, config map[string]any) map[string]any {
-	tools, ok := config["tools"].(map[string]any)
-	if !ok {
-		t.Fatalf("unable to get tools from config")
-	}
-	tools["my-exec-sql-tool"] = map[string]any{
-		"kind":        "singlestore-execute-sql",
-		"source":      "my-instance",
-		"description": "Tool to execute sql",
-	}
-	tools["my-auth-exec-sql-tool"] = map[string]any{
-		"kind":        "singlestore-execute-sql",
-		"source":      "my-instance",
-		"description": "Tool to execute sql",
-		"authRequired": []string{
-			"my-google-auth",
-		},
-	}
-	config["tools"] = tools
-	return config
-}
-
 // AddMSSQLExecuteSqlConfig gets the tools config for `mssql-execute-sql`
 func AddMSSQLExecuteSqlConfig(t *testing.T, config map[string]any) map[string]any {
 	tools, ok := config["tools"].(map[string]any)
@@ -422,34 +399,6 @@ func GetMySQLTmplToolStatement() (string, string) {
 	return tmplSelectCombined, tmplSelectFilterCombined
 }
 
-// GetSingleStoreParamToolInfo returns statements and param for my-tool mysql-sql kind
-func GetSingleStoreParamToolInfo(tableName string) (string, string, string, string, string, string, []any) {
-	createStatement := fmt.Sprintf("CREATE TABLE %s (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255));", tableName)
-	insertStatement := fmt.Sprintf("INSERT INTO %s (name) VALUES (?), (?), (?), (?);", tableName)
-	toolStatement := fmt.Sprintf("SELECT * FROM %s WHERE id = ? OR name = ?;", tableName)
-	idParamStatement := fmt.Sprintf("SELECT * FROM %s WHERE id = ?;", tableName)
-	nameParamStatement := fmt.Sprintf("SELECT * FROM %s WHERE name = ?;", tableName)
-	arrayToolStmt := ""
-	params := []any{"Alice", "Jane", "Sid", nil}
-	return createStatement, insertStatement, toolStatement, idParamStatement, nameParamStatement, arrayToolStmt, params
-}
-
-// GetSingleStoreAuthToolInfo returns statements and param of my-auth-tool for singlestore-sql kind
-func GetSingleStoreAuthToolInfo(tableName string) (string, string, string, []any) {
-	createStatement := fmt.Sprintf("CREATE TABLE %s (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255));", tableName)
-	insertStatement := fmt.Sprintf("INSERT INTO %s (name, email) VALUES (?, ?), (?, ?)", tableName)
-	toolStatement := fmt.Sprintf("SELECT name FROM %s WHERE email = ?;", tableName)
-	params := []any{"Alice", ServiceAccountEmail, "Jane", "janedoe@gmail.com"}
-	return createStatement, insertStatement, toolStatement, params
-}
-
-// GetSingleStoreTmplToolStatement returns statements and param for template parameter test cases for singlestore-sql kind
-func GetSingleStoreTmplToolStatement() (string, string) {
-	tmplSelectCombined := "SELECT * FROM {{.tableName}} WHERE id = ?"
-	tmplSelectFilterCombined := "SELECT * FROM {{.tableName}} WHERE {{.columnFilter}} = ?"
-	return tmplSelectCombined, tmplSelectFilterCombined
-}
-
 func GetNonSpannerInvokeParamWant() (string, string, string, string) {
 	invokeParamWant := "[{\"id\":1,\"name\":\"Alice\"},{\"id\":3,\"name\":\"Sid\"}]"
 	invokeIdNullWant := "[{\"id\":4,\"name\":null}]"
@@ -481,15 +430,6 @@ func GetMySQLWants() (string, string, string, string) {
 	select1Want := "[{\"1\":1}]"
 	mcpMyFailToolWant := `{"jsonrpc":"2.0","id":"invoke-fail-tool","result":{"content":[{"type":"text","text":"unable to execute query: Error 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELEC 1' at line 1"}],"isError":true}}`
 	createTableStatement := `"CREATE TABLE t (id SERIAL PRIMARY KEY, name TEXT)"`
-	mcpSelect1Want := `{"jsonrpc":"2.0","id":"invoke my-auth-required-tool","result":{"content":[{"type":"text","text":"{\"1\":1}"}]}}`
-	return select1Want, mcpMyFailToolWant, createTableStatement, mcpSelect1Want
-}
-
-// GetSingleStoreWants return the expected wants for singlestore
-func GetSingleStoreWants() (string, string, string, string) {
-	select1Want := "[{\"1\":1}]"
-	mcpMyFailToolWant := `{"jsonrpc":"2.0","id":"invoke-fail-tool","result":{"content":[{"type":"text","text":"unable to execute query: Error 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELEC 1' at line 1"}],"isError":true}}`
-	createTableStatement := `"CREATE TABLE t (id BIGINT AUTO INCREMENT PRIMARY KEY, name TEXT)"`
 	mcpSelect1Want := `{"jsonrpc":"2.0","id":"invoke my-auth-required-tool","result":{"content":[{"type":"text","text":"{\"1\":1}"}]}}`
 	return select1Want, mcpMyFailToolWant, createTableStatement, mcpSelect1Want
 }
@@ -555,35 +495,6 @@ func SetupMsSQLTable(t *testing.T, ctx context.Context, pool *sql.DB, createStat
 // SetupMySQLTable creates and inserts data into a table of tool
 // compatible with mysql-sql tool
 func SetupMySQLTable(t *testing.T, ctx context.Context, pool *sql.DB, createStatement, insertStatement, tableName string, params []any) func(*testing.T) {
-	err := pool.PingContext(ctx)
-	if err != nil {
-		t.Fatalf("unable to connect to test database: %s", err)
-	}
-
-	// Create table
-	_, err = pool.QueryContext(ctx, createStatement)
-	if err != nil {
-		t.Fatalf("unable to create test table %s: %s", tableName, err)
-	}
-
-	// Insert test data
-	_, err = pool.QueryContext(ctx, insertStatement, params...)
-	if err != nil {
-		t.Fatalf("unable to insert test data: %s", err)
-	}
-
-	return func(t *testing.T) {
-		// tear down test
-		_, err = pool.ExecContext(ctx, fmt.Sprintf("DROP TABLE %s;", tableName))
-		if err != nil {
-			t.Errorf("Teardown failed: %s", err)
-		}
-	}
-}
-
-// SetupSingleStoreTable creates and inserts data into a table of tool
-// compatible with singlestore-sql tool
-func SetupSingleStoreTable(t *testing.T, ctx context.Context, pool *sql.DB, createStatement, insertStatement, tableName string, params []any) func(*testing.T) {
 	err := pool.PingContext(ctx)
 	if err != nil {
 		t.Fatalf("unable to connect to test database: %s", err)
