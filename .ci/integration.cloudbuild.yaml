@@ -790,12 +790,11 @@ steps:
     entrypoint: /bin/bash
     env:
       - "GOPATH=/gopath"
-      - "SINGLESTORE_HOST=$_SINGLESTORE_HOST"
       - "SINGLESTORE_PORT=$_SINGLESTORE_PORT"
       - "SINGLESTORE_USER=$_SINGLESTORE_USER"
       - "SINGLESTORE_DATABASE=$_SINGLESTORE_DATABASE"
       - "SERVICE_ACCOUNT_EMAIL=$SERVICE_ACCOUNT_EMAIL"
-    secretEnv: ["SINGLESTORE_PASSWORD", "CLIENT_ID"]
+    secretEnv: ["SINGLESTORE_PASSWORD", "SINGLESTORE_HOST", "CLIENT_ID"]
     volumes:
       - name: "go"
         path: "/gopath"
