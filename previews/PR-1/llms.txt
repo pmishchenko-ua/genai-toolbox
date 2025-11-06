@@ -62,6 +62,7 @@ List of reference documentation for resources in Toolbox.
   - [Couchbase](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/sources/couchbase/): A "couchbase" source connects to a Couchbase database.
   - [Dataplex](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/sources/dataplex/): Dataplex Universal Catalog is a unified, intelligent governance solution for data and AI assets in Google Cloud. Dataplex Universal Catalog powers AI, analytics, and business intelligence at scale.
   - [Dgraph](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/sources/dgraph/): Dgraph is fully open-source, built-for-scale graph database for Gen AI workloads
+  - [Elasticsearch](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/sources/elasticsearch/): Elasticsearch is a distributed, free and open search and analytics engine  for all types of data, including textual, numerical, geospatial, structured,  and unstructured.
   - [Firebird](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/sources/firebird/): Firebird is a powerful, cross-platform, and open-source relational database.
   - [Firestore](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/sources/firestore/): Firestore is a NoSQL document database built for automatic scaling, high performance, and ease of application development. It's a fully managed, serverless database that supports mobile, web, and server development.
   - [HTTP](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/sources/http/): The HTTP source enables the Toolbox to retrieve data from a remote server using HTTP requests.
@@ -97,6 +98,7 @@ List of reference documentation for resources in Toolbox.
   - [Dataform](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/tools/dataform/): Tools that work with Dataform.
   - [Dataplex](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/tools/dataplex/): Tools that work with Dataplex Sources.
   - [Dgraph](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/tools/dgraph/): Tools that work with Dgraph Sources.
+  - [Elasticsearch](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/tools/elasticsearch/): Tools that work with Elasticsearch Sources.
   - [Firebird](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/tools/firebird/): Tools that work with Firebird Sources.
   - [Firestore](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/tools/firestore/): Tools that work with Firestore Sources.
   - [HTTP](https://pmishchenko-ua.github.io/genai-toolbox/previews/PR-1/resources/tools/http/): Tools that work with HTTP Sources.
