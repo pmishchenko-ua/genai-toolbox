@@ -54,6 +54,7 @@ List of reference documentation for resources in Toolbox.
   - [Bigtable](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/bigtable/): Bigtable is a low-latency NoSQL database service for machine learning, operational analytics, and user-facing operations. It's a wide-column, key-value store that can scale to billions of rows and thousands of columns. With Bigtable, you can replicate your data to regions across the world for high availability and data resiliency.
   - [Cassandra](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/cassandra/): Apache Cassandra is a NoSQL distributed database known for its horizontal scalability, distributed architecture, and flexible schema definition.
   - [ClickHouse](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/clickhouse/): ClickHouse is an open-source, OLTP database.
+  - [Cloud Healthcare API](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/cloud-healthcare/): The Cloud Healthcare API provides a managed solution for storing and accessing healthcare data in Google Cloud, providing a critical bridge  between existing care systems and applications hosted on Google Cloud.
   - [Cloud Monitoring](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/cloud-monitoring/): A "cloud-monitoring" source provides a client for the Cloud Monitoring API.
   - [Cloud SQL for MySQL](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/cloud-sql-mysql/): Cloud SQL for MySQL is a fully-managed database service for MySQL.
   - [Cloud SQL for PostgreSQL](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/cloud-sql-pg/): Cloud SQL for PostgreSQL is a fully-managed database service for Postgres.
@@ -76,6 +77,7 @@ List of reference documentation for resources in Toolbox.
   - [PostgreSQL](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/postgres/): PostgreSQL is a powerful, open source object-relational database.
   - [Redis](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/redis/): Redis is a in-memory data structure store.
   - [Serverless for Apache Spark](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/serverless-spark/): Google Cloud Serverless for Apache Spark lets you run Spark workloads without requiring you to provision and manage your own Spark cluster.
+  - [SingleStore](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/singlestore/): SingleStore is the cloud-native database built with speed and scale to power data-intensive applications.
   - [Spanner](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/spanner/): Spanner is a fully managed database service from Google Cloud that combines  relational, key-value, graph, and search capabilities.
   - [SQL Server](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/mssql/): SQL Server is a relational database management system (RDBMS).
   - [SQLite](https://pmishchenko-ua.github.io/genai-toolbox/resources/sources/sqlite/): SQLite is a C-language library that implements a small, fast, self-contained,  high-reliability, full-featured, SQL database engine.
@@ -91,6 +93,7 @@ List of reference documentation for resources in Toolbox.
   - [Bigtable](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/bigtable/): Tools that work with Bigtable Sources.
   - [Cassandra](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/cassandra/): Tools that work with Cassandra Sources.
   - [ClickHouse](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/clickhouse/): Tools for interacting with ClickHouse databases and tables.
+  - [Cloud Healthcare API](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/cloudhealthcare/): Tools that work with Cloud Healthcare Sources.
   - [Cloud Monitoring](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/cloudmonitoring/): Tools that work with Cloud Monitoring source.
   - [Cloud SQL](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/cloudsql/): Tools that work with Cloud SQL. 
   - [Couchbase](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/couchbase/): Tools that work with Couchbase Sources.
@@ -111,6 +114,7 @@ List of reference documentation for resources in Toolbox.
   - [Postgres](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/postgres/): Tools that work with Postgres Sources, such as Cloud SQL for Postgres and AlloyDB. 
   - [Redis](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/redis/): Tools that work with Redis Sources.
   - [Serverless for Apache Spark](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/serverless-spark/): Tools that work with Google Cloud Serverless for Apache Spark Sources.
+  - [SingleStore](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/singlestore/): Tools that work with SingleStore Sources
   - [Spanner](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/spanner/): Tools that work with Spanner Sources.
   - [SQL Server](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/mssql/): Tools that work with SQL Server Sources, such as CloudSQL for SQL Server.
   - [SQLite](https://pmishchenko-ua.github.io/genai-toolbox/resources/tools/sqlite/): Tools that work with SQLite Sources.
