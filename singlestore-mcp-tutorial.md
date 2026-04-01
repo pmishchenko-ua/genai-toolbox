@@ -217,7 +217,7 @@ Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
       "command": "genai-toolbox",
       "args": [
         "--prebuilt", "singlestore",
-        "--tools", "singlestore-config.yaml",
+        "--tools-file", "singlestore-config.yaml",
         "--stdio"
       ],
       "env": {
