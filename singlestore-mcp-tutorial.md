@@ -178,7 +178,6 @@ sources:
 Create `.singlestore.env` file with your connection credentials. Replace the values with your actual SingleStore credentials.
 
 ```bash
-# .singlestore.env
 SINGLESTORE_HOST=<your-host>
 SINGLESTORE_PORT=<yout-port, usually 3306>
 SINGLESTORE_DATABASE=<your-database>
