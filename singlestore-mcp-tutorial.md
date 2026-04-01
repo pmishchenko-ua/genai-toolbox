@@ -1,4 +1,4 @@
-# Building an AI Database Assistant with SingleStore and GenAI Toolbox
+# Building an AI Database Assistant with SingleStore and MCP Toolbox
 
 
 ## What You'll Build
@@ -14,7 +14,7 @@ By the end of this tutorial, you'll have an AI assistant that can:
 ## Prerequisites
 
 - **SingleStore Instance**: [Sign up for free tier](https://www.singlestore.com/cloud-trial/) or use existing instance
-- **GenAI Toolbox**: We'll install this in the setup steps
+- **MCP Toolbox**: We'll install this in the setup steps
 - **MCP Client**: Claude Desktop, Cursor, or any MCP-compatible IDE
 - **Sample Database**: We'll create an e-commerce demo database
 
@@ -63,7 +63,6 @@ CREATE TABLE orders (
     order_date DATETIME DEFAULT NOW(),
     total_amount DECIMAL(10, 2),
     status VARCHAR(20) DEFAULT 'pending',
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
     INDEX idx_order_date (order_date),
     INDEX idx_customer (customer_id)
 );
@@ -126,12 +125,12 @@ UNION ALL
 SELECT 'Order Items', COUNT(*) FROM order_items;
 ```
 
-You should see 5 customers, 5 products, 5 orders, and 9 order items.
+You should see 5 customers, 5 products, 5 orders, and 10 order items.
 
-## Part 2: Install and Configure GenAI Toolbox
+## Part 2: Install and Configure MCP Toolbox
 
 TODO: rename GenAI to MCP
-### 2.1 Install GenAI Toolbox
+### 2.1 Install MCP Toolbox
 
 ```bash
 # Download the latest release, visit https://github.com/googleapis/genai-toolbox/releases
@@ -144,8 +143,8 @@ curl -L -o genai-toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/
 # For macOS (Intel):
 curl -L -o genai-toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/amd64/toolbox
 
-# For Linux (genai-toolbox):
-curl -L -o toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
+# For Linux:
+curl -L -o genai-toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
 
 chmod +x genai-toolbox
 # Move to your  /usr/local/bin/ or other place in PATH
@@ -198,7 +197,7 @@ chmod 600 .singlestore.env
 # Load environment variables
 export $(cat .singlestore.env | xargs)
 
-# Start GenAI Toolbox with MCP
+# Start MCP Toolbox with MCP
 genai-toolbox --tools-file singlestore-config.yaml
 ```
 
@@ -274,7 +273,7 @@ Simply ask:
 
 The AI will:
 1. Call `list_tables` to get complete schema information
-2. Analyze the foreign keys and relationships
+2. Analyze keys and relationships
 3. Provide a clear explanation like:
 
 *"Your ecommerce_demo database has 4 tables:*
@@ -374,7 +373,7 @@ The AI will use your custom `top_customers` tool automatically.
 
 ### Learn More
 
-- [GenAI Toolbox Documentation](https://github.com/googleapis/genai-toolbox)
+- [MCP Toolbox Documentation](https://github.com/googleapis/genai-toolbox)
 - [SingleStore Documentation](https://docs.singlestore.com/)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
 - [More Source Integrations](https://github.com/googleapis/genai-toolbox/tree/main/docs/en/resources/sources)
