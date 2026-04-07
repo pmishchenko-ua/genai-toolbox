@@ -1,5 +1,18 @@
 # Building an AI Database Assistant with SingleStore and MCP Toolbox for Databases
 
+## Why MCP for Database Access?
+
+Model Context Protocol (MCP) standardizes how AI assistants interact with external tools. Instead of copying query results back and forth between your database client and chat window, MCP lets the AI execute queries directly against your database within guardrails you define.
+
+This tutorial walks through connecting SingleStore to an MCP client using MCP Toolbox—an open-source MCP server that handles connection pooling, query execution, and schema introspection.
+
+```
+┌─────────────┐     MCP/stdio      ┌─────────────────┐     MySQL protocol     ┌─────────────┐
+│ Claude/IDE  │ ◄────────────────► │  MCP Toolbox    │ ◄───────────────────►  │ SingleStore │
+└─────────────┘                    └─────────────────┘                        └─────────────┘
+```
+
+When you ask a question, the MCP client sends your prompt plus available tool schemas to the LLM. The LLM decides which tool to call and with what parameters. The MCP client executes the tool call via Toolbox, which runs the query against SingleStore and returns results. The LLM then formats the response.
 
 ## What You'll Build
 
@@ -128,7 +141,8 @@ SELECT 'Order Items', COUNT(*) FROM order_items;
 You should see 5 customers, 5 products, 5 orders, and 10 order items.
 
 ## Part 2: Install and Configure MCP Toolbox
-MCP Toolbox for Databases (originally named "Gen AI Toolbox for Databases") is an open source Model Context Protocol (MCP) server that connects your AI agents, IDEs, and applications directly to your enterprise databases.
+
+MCP Toolbox for Databases is an open-source MCP server for database connectivity. It manages connection pooling, exposes schema introspection tools, and executes queries on behalf of MCP clients.
 
 ### 2.1 Install MCP Toolbox
 
@@ -148,7 +162,7 @@ curl -L -o genai-toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/
 curl -L -o genai-toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
 
 chmod +x genai-toolbox
-# Move to your  /usr/local/bin/ or other place in PATH
+# Move to your /usr/local/bin/ or other place in PATH
 sudo mv genai-toolbox /usr/local/bin/
 
 # Verify installation
@@ -180,7 +194,7 @@ Create `.singlestore.env` file with your connection credentials. Replace the val
 
 ```bash
 SINGLESTORE_HOST=<your-host>
-SINGLESTORE_PORT=<yout-port, usually 3306>
+SINGLESTORE_PORT=<your-port, usually 3306>
 SINGLESTORE_DATABASE=<your-database>
 SINGLESTORE_USER=<your-username>
 SINGLESTORE_PASSWORD=<your-password>
@@ -197,7 +211,7 @@ chmod 600 .singlestore.env
 # Load environment variables
 export $(cat .singlestore.env | xargs)
 
-# Start MCP Toolbox with MCP
+# Start MCP Toolbox
 genai-toolbox --config singlestore-config.yaml
 ```
 
@@ -207,7 +221,7 @@ You should see output indicating the MCP server is running and tools are registe
 
 Now let's connect an AI client to use these tools. We'll use Claude CLI as an example, but the process is similar for Cursor, Cline, or other MCP-compatible clients.
 
-### 3.1 Configure Claude Desktop
+### 3.1 Configure Claude CLI
 
 Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
 
@@ -223,7 +237,7 @@ Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
       ],
       "env": {
         "SINGLESTORE_HOST":"<your-host>",
-        "SINGLESTORE_PORT":"<yout-port>",
+        "SINGLESTORE_PORT":"<your-port>",
         "SINGLESTORE_DATABASE":"<your-database>",
         "SINGLESTORE_USER":"<your-username>",
         "SINGLESTORE_PASSWORD":"<your-password>"
@@ -233,7 +247,7 @@ Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
 }
 ```
 
-### 3.2 Restart Claude Desktop
+### 3.2 Restart Claude CLI
 
 After saving the configuration to `.mcp.json`:
 
@@ -252,7 +266,7 @@ Claude should respond with information about the `execute_sql` and `list_tables`
 
 ## Part 4: Usage Examples
 
-Now let's see how MCP + AI transforms database work.
+Here are some practical examples comparing traditional SQL workflows with the MCP approach.
 
 ### 1: Schema Exploration
 
@@ -274,7 +288,7 @@ Simply ask:
 The AI will:
 1. Call `list_tables` to get complete schema information
 2. Analyze keys and relationships
-3. Provide a clear explanation like:
+3. Provide an explanation (example response—actual output will vary):
 
 *"Your ecommerce_demo database has 4 tables:*
 
@@ -332,12 +346,16 @@ The AI:
 Each follow-up is answered without rewriting queries.
 
 
-## Part 5: Extensions
-Let's look at a few ways to expand the functionality of our integration.
+## Part 5: Custom Tools and Security
+
+The default `execute_sql` tool runs arbitrary SQL, which is powerful but may be too permissive for some use cases. You can restrict access by:
+
+1. Using a read-only database user
+2. Defining explicit tools with parameterized queries (recommended for production)
 
 ### Custom Tools for Repeated Tasks
 
-You can create custom tools for frequently-used queries. For example, add to your config:
+Custom tools let you expose specific, parameterized queries instead of general SQL access. Add to your config:
 
 ```yaml
 # singlestore-config.yaml
@@ -368,10 +386,27 @@ tools:
 Now you can ask:
 > "Show me the top 5 customers"
 
-The AI will use your custom `top_customers` tool automatically. Using pre-built and custom tools saves time and tokens as LLM doesn't need to figure out the query each time.
+The AI will use your custom `top_customers` tool automatically. Custom tools avoid regenerating the same query logic on every request and give you explicit control over what SQL runs against your database.
 
+## Troubleshooting
 
-### Learn More
+**Connection refused**
+- Verify host and port are correct
+- Check firewall rules and IP whitelist settings in SingleStore Cloud
+
+**Access denied**
+- Verify credentials in your `.env` file
+- Ensure the database user has appropriate permissions
+- For SingleStore Cloud, confirm your IP is whitelisted
+
+**SSL/TLS errors**
+- For self-signed certificates, you may need additional SSL configuration
+
+**Query timeout**
+- Increase `queryTimeout` in your config for complex queries
+- Check if the query runs successfully in a standard MySQL/SingleStore CLI first
+
+## Learn More
 
 - [MCP Toolbox with SingleStore Source Reference](https://mcp-toolbox.dev/integrations/singlestore/source/)
 - [MCP Toolbox Documentation](https://mcp-toolbox.dev/documentation/introduction/)
