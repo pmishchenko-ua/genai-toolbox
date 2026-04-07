@@ -1,4 +1,4 @@
-# Building an AI Database Assistant with SingleStore and MCP Toolbox
+# Building an AI Database Assistant with SingleStore and MCP Toolbox for Databases
 
 
 ## What You'll Build
@@ -37,7 +37,7 @@ Copy and run this SQL to create our e-commerce schema:
 ```sql
 -- Customers table
 CREATE TABLE customers (
-    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     customer_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     state VARCHAR(2),
@@ -48,7 +48,7 @@ CREATE TABLE customers (
 
 -- Products table
 CREATE TABLE products (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(200) NOT NULL,
     category VARCHAR(50),
     price DECIMAL(10, 2),
@@ -58,8 +58,8 @@ CREATE TABLE products (
 
 -- Orders table
 CREATE TABLE orders (
-    order_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL,
+    order_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id BIGINT NOT NULL,
     order_date DATETIME DEFAULT NOW(),
     total_amount DECIMAL(10, 2),
     status VARCHAR(20) DEFAULT 'pending',
@@ -69,9 +69,9 @@ CREATE TABLE orders (
 
 -- Order items table
 CREATE TABLE order_items (
-    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    product_id INT NOT NULL,
+    order_item_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
     quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     INDEX idx_order (order_id)
@@ -128,15 +128,16 @@ SELECT 'Order Items', COUNT(*) FROM order_items;
 You should see 5 customers, 5 products, 5 orders, and 10 order items.
 
 ## Part 2: Install and Configure MCP Toolbox
+MCP Toolbox for Databases (originally named "Gen AI Toolbox for Databases") is an open source Model Context Protocol (MCP) server that connects your AI agents, IDEs, and applications directly to your enterprise databases.
 
-TODO: rename GenAI to MCP
 ### 2.1 Install MCP Toolbox
 
 ```bash
 # Download the latest release, visit https://github.com/googleapis/genai-toolbox/releases
 # if the links below don't work or your OS is not listed here
 
-export VERSION=0.27.0
+# TODO: update to 0.32.0 when ssl support is released
+export VERSION=0.31.0
 # For macOS (Apple Silicon):
 curl -L -o genai-toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/arm64/toolbox
 
@@ -197,7 +198,7 @@ chmod 600 .singlestore.env
 export $(cat .singlestore.env | xargs)
 
 # Start MCP Toolbox with MCP
-genai-toolbox --tools-file singlestore-config.yaml
+genai-toolbox --config singlestore-config.yaml
 ```
 
 You should see output indicating the MCP server is running and tools are registered. You can stop the process with Ctrl+C after checking that `genai-toolbox` can be started with your config.
@@ -217,7 +218,7 @@ Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
       "command": "genai-toolbox",
       "args": [
         "--prebuilt", "singlestore",
-        "--tools-file", "singlestore-config.yaml",
+        "--config", "singlestore-config.yaml",
         "--stdio"
       ],
       "env": {
@@ -312,11 +313,11 @@ Ask naturally:
 
 The AI:
 1. Understands you need to join `customers` and `orders`.
-2. Generates the  query and executes it.
+2. Generates the query and executes it.
 3. Formats the results with insights.
 
 *"Here are the top states by revenue in Q4 2024:*
-*1. CA (California): $1,692.95 from 2 orders*
+*1. CA (California): $1,692.94 from 3 orders*
 *2. TX (Texas): $1,312.98 from 1 order*
 *3. NY (New York): $349.98 from 1 order"*
 
@@ -326,9 +327,9 @@ The AI:
 
 > "What did the Texas customer order?"
 
-> "Compare this to the previous quarter"
+> "Compare October and November of 2024"
 
-Each follow-up is answered instantly without rewriting queries.
+Each follow-up is answered without rewriting queries.
 
 
 ## Part 5: Extensions
@@ -367,12 +368,12 @@ tools:
 Now you can ask:
 > "Show me the top 5 customers"
 
-The AI will use your custom `top_customers` tool automatically.
+The AI will use your custom `top_customers` tool automatically. Using pre-built and custom tools saves time and tokens as LLM doesn't need to figure out the query each time.
 
 
 ### Learn More
 
-- [MCP Toolbox Documentation](https://github.com/googleapis/genai-toolbox)
+- [MCP Toolbox with SingleStore Source Reference](https://mcp-toolbox.dev/integrations/singlestore/source/)
+- [MCP Toolbox Documentation](https://mcp-toolbox.dev/documentation/introduction/)
 - [SingleStore Documentation](https://docs.singlestore.com/)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
-- [More Source Integrations](https://github.com/googleapis/genai-toolbox/tree/main/docs/en/resources/sources)
