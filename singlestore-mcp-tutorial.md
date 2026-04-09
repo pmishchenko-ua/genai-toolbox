@@ -27,7 +27,7 @@ By the end of this tutorial, you'll have an AI assistant that can:
 ## Prerequisites
 
 - **SingleStore Instance**: [Sign up for free tier](https://www.singlestore.com/cloud-trial/) or use existing instance
-- **MCP Toolbox**: We'll install this in the setup steps
+- **MCP Toolbox**: We'll install and run this in the setup steps. You can choose running the server locally or using docker
 - **MCP Client**: Claude Desktop, Cursor, or any MCP-compatible IDE
 - **Sample Database**: We'll create an e-commerce demo database
 
@@ -144,7 +144,43 @@ You should see 5 customers, 5 products, 5 orders, and 10 order items.
 
 MCP Toolbox for Databases is an open-source MCP server for database connectivity. It manages connection pooling, exposes schema introspection tools, and executes queries on behalf of MCP clients.
 
-### 2.1 Install MCP Toolbox
+### 2.1 Create SingleStore Configuration
+
+Create a configuration file that specifies connection parameters for your SingleStore database. You can define custom tools available to MCP clients here as well.
+
+Create `singlestore-config.yaml`:
+
+```yaml
+# singlestore-config.yaml
+sources:
+  my-singlestore:
+    kind: singlestore
+    host: ${SINGLESTORE_HOST}
+    port: ${SINGLESTORE_PORT}
+    database: ${SINGLESTORE_DATABASE}
+    user: ${SINGLESTORE_USER}
+    password: ${SINGLESTORE_PASSWORD}
+    queryTimeout: 30s
+```
+
+### 2.2 Set Environment Variables
+
+Create `.singlestore.env` file with your connection credentials. Replace the values with your actual SingleStore credentials.
+
+```bash
+SINGLESTORE_HOST=<your-host>
+SINGLESTORE_PORT=<your-port, usually 3306>
+SINGLESTORE_DATABASE=<your-database>
+SINGLESTORE_USER=<your-username>
+SINGLESTORE_PASSWORD=<your-password>
+```
+
+Secure the file:
+```bash
+chmod 600 .singlestore.env
+```
+
+### 2.3.1 Install and run MCP Toolbox on your local machine
 
 ```bash
 # Download the latest release, visit https://github.com/googleapis/genai-toolbox/releases
@@ -168,44 +204,7 @@ sudo mv genai-toolbox /usr/local/bin/
 genai-toolbox --version
 ```
 
-### 2.2 Create SingleStore Configuration
-
-Create a configuration file that specifies connection parameters for your SingleStore database. You can define custom tools available to MCP clients here as well.
-
-Create `singlestore-config.yaml`:
-
-```yaml
-# singlestore-config.yaml
-sources:
-  my-singlestore:
-    kind: singlestore
-    host: ${SINGLESTORE_HOST}
-    port: ${SINGLESTORE_PORT}
-    database: ${SINGLESTORE_DATABASE}
-    user: ${SINGLESTORE_USER}
-    password: ${SINGLESTORE_PASSWORD}
-    queryTimeout: 30s
-```
-
-### 2.3 Set Environment Variables
-
-Create `.singlestore.env` file with your connection credentials. Replace the values with your actual SingleStore credentials.
-
-```bash
-SINGLESTORE_HOST=<your-host>
-SINGLESTORE_PORT=<your-port, usually 3306>
-SINGLESTORE_DATABASE=<your-database>
-SINGLESTORE_USER=<your-username>
-SINGLESTORE_PASSWORD=<your-password>
-```
-
-Secure the file:
-```bash
-chmod 600 .singlestore.env
-```
-
-### 2.4 Test the Configuration
-
+To start the MCP Toolbox server, run
 ```bash
 # Load environment variables
 export $(cat .singlestore.env | xargs)
@@ -216,7 +215,7 @@ genai-toolbox --config singlestore-config.yaml
 
 You should see output indicating the MCP server is running and tools are registered. You can stop the process with Ctrl+C after checking that `genai-toolbox` can be started with your config.
 
-### 2.5 Alternative: Run with Docker
+### 2.3.2 Install and run MCP Toolbox with Docker
 
 If you prefer Docker over installing a binary, you can run MCP Toolbox as a container. This approach also lets you run Toolbox on a remote machine and connect to it over the network.
 
@@ -245,7 +244,7 @@ docker run -d --name mcp-toolbox \
 Flags to note:
 - `-d` runs the container in the background so it stays up as a persistent server.
 - `--address 0.0.0.0` binds to all network interfaces inside the container (the default `127.0.0.1` would only be reachable from inside the container itself).
-- `-p 5001:5000` forwards container's port 5000 where toolbox server is running to the host's port 5001. You may choose any other available port.
+- `-p 5001:5000` forwards container's port 5000 where toolbox server is running to the host's port 5001. You may choose another available port.
 
 Verify it's running:
 
@@ -271,8 +270,9 @@ Now let's connect an AI client to use these tools. We'll use Claude CLI as an ex
 
 ### 3.1 Configure Claude CLI
 
-Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
+Edit the configuration file `.mcp.json` by adding SingleStore MCP server.
 
+For toolbox running locally (see section 2.3.1) use:
 ```json
 {
   "mcpServers": {
@@ -295,9 +295,7 @@ Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
 }
 ```
 
-#### Docker / Remote Variant
-
-If Toolbox is running as a Docker container (see section 2.5), the MCP client connects to it over HTTP instead of spawning a local process. Replace `<your-toolbox-host>` with `127.0.0.1` for a local container, or the server's IP/hostname for a remote one:
+If Toolbox is running as a Docker container (see section 2.3.2), the MCP client connects to it over HTTP instead of spawning a local process. Replace `<your-toolbox-host>` with `127.0.0.1` for a local container, or the server's IP/hostname for a remote one:
 
 ```json
 {
