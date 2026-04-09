@@ -150,8 +150,7 @@ MCP Toolbox for Databases is an open-source MCP server for database connectivity
 # Download the latest release, visit https://github.com/googleapis/genai-toolbox/releases
 # if the links below don't work or your OS is not listed here
 
-# TODO: update to 0.32.0 when ssl support is released
-export VERSION=0.31.0
+export VERSION=0.32.0
 # For macOS (Apple Silicon):
 curl -L -o genai-toolbox https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/arm64/toolbox
 
@@ -217,6 +216,55 @@ genai-toolbox --config singlestore-config.yaml
 
 You should see output indicating the MCP server is running and tools are registered. You can stop the process with Ctrl+C after checking that `genai-toolbox` can be started with your config.
 
+### 2.5 Alternative: Run with Docker
+
+If you prefer Docker over installing a binary, you can run MCP Toolbox as a container. This approach also lets you run Toolbox on a remote machine and connect to it over the network.
+
+#### Pull the Image
+
+```bash
+export VERSION=0.32.0
+docker pull us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:$VERSION
+```
+
+#### Run the Container
+
+Make sure your `singlestore-config.yaml` and `.singlestore.env` files exist in the current directory (from steps 2.2 and 2.3), then run:
+
+```bash
+docker run -d --name mcp-toolbox \
+  -v "$(pwd)/singlestore-config.yaml:/app/config.yaml" \
+  --env-file .singlestore.env \
+  -p 5001:5000 \
+  us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:$VERSION \
+  --prebuilt singlestore \
+  --config /app/config.yaml \
+  --address 0.0.0.0
+```
+
+Flags to note:
+- `-d` runs the container in the background so it stays up as a persistent server.
+- `--address 0.0.0.0` binds to all network interfaces inside the container (the default `127.0.0.1` would only be reachable from inside the container itself).
+- `-p 5001:5000` forwards container's port 5000 where toolbox server is running to the host's port 5001. You may choose any other available port.
+
+Verify it's running:
+
+```bash
+# Check container logs
+docker logs mcp-toolbox
+
+# Test the HTTP endpoint (from the same machine)
+curl http://127.0.0.1:5001
+```
+
+If you're running this on a remote server, replace `127.0.0.1` with the server's IP or hostname. Make sure port 5001 is open in your firewall.
+
+To stop and remove the container:
+
+```bash
+docker stop mcp-toolbox && docker rm mcp-toolbox
+```
+
 ## Part 3: Connect Your MCP Client
 
 Now let's connect an AI client to use these tools. We'll use Claude CLI as an example, but the process is similar for Cursor, Cline, or other MCP-compatible clients.
@@ -246,6 +294,23 @@ Edit the configuration file `.mcp.json` by adding SingleStore MCP server:
   }
 }
 ```
+
+#### Docker / Remote Variant
+
+If Toolbox is running as a Docker container (see section 2.5), the MCP client connects to it over HTTP instead of spawning a local process. Replace `<your-toolbox-host>` with `127.0.0.1` for a local container, or the server's IP/hostname for a remote one:
+
+```json
+{
+  "mcpServers": {
+    "singlestore-demo": {
+      "type": "http",
+      "url": "http://<your-toolbox-host>:5001/mcp"
+    }
+  }
+}
+```
+
+This uses MCP's Streamable HTTP transport — the client talks to the already-running Toolbox server over the network. No `command` or `args` are needed since the client isn't launching anything locally.
 
 ### 3.2 Restart Claude CLI
 
